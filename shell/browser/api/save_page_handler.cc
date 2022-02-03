@@ -30,6 +30,12 @@ void SavePageHandler::OnDownloadCreated(content::DownloadManager* manager,
 
 bool SavePageHandler::Handle(const base::FilePath& full_path,
                              const content::SavePageType& save_type) {
+  if (!full_path.IsAbsolute()) {
+    promise_.RejectWithErrorMessage("Path must be absolute");
+    delete this;
+    return false;
+  }
+
   auto* download_manager =
       web_contents_->GetBrowserContext()->GetDownloadManager();
   download_manager->AddObserver(this);
